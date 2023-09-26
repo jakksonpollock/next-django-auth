@@ -1,7 +1,8 @@
 import NextAuth from "next-auth"
 import CredentialsProvider from "next-auth/providers/credentials";
 import axios from "axios";
-
+import dns from 'node:dns';
+dns.setDefaultResultOrder('ipv4first');
 const apiURL = process.env.NEXT_PUBLIC_API_URL;
 
 const urlMaker = (path: string) => `${apiURL}${path}`;
@@ -18,7 +19,7 @@ const handler = NextAuth({
         password: { label: "Password", type: "password" },
       },
       async authorize(credentials, req) {
-        const url = urlMaker("/api/auth/");
+        const url = urlMaker("/api/login/");
         console.log(url);
         try{
             const res = await fetch(url, {
@@ -28,6 +29,7 @@ const handler = NextAuth({
             })
             const user = await res.json()
             if ( res.ok && user) {
+                console.log(user)
                 return user
             }
         } catch (err) {
